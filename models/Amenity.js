@@ -21,7 +21,7 @@ const AmenitySchema = new mongoose.Schema({
     enum: ['available', 'under_maintenance', 'closed'],
     default: 'available'
   },
-  community: { type: mongoose.Schema.Types.ObjectId, ref: 'Community'},
+  // community: { type: mongoose.Schema.Types.ObjectId, ref: 'Community'},
   bookings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'AmenityBooking' }]
 });
 

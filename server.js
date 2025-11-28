@@ -16,7 +16,7 @@ const complaintRoutes = require('./routes/complaintRoute');
 const superAdminRoutes = require('./routes/superAdminRoute');
 const amenityRoutes = require('./routes/amenityRoute');
 const hoaAdminRoutes = require('./routes/hoaAdminRoute');
-const residentRoutes = require('./routes/superAdminRoute');
+const residentRoutes = require('./routes/residentRoute');
 
 const app = express();
 connectDB();

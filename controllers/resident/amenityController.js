@@ -5,7 +5,7 @@ exports.bookAminity = async (req,res) => {
 
   try{
 
-    const { amenityId, bookiDate} = req.body;
+    const { amenityId, bookingDate} = req.body;
     const userId = req.user._id;
     const communityId = req.user.communityId;
 
