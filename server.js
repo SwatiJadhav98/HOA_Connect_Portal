@@ -16,6 +16,7 @@ const complaintRoutes = require('./routes/complaintRoute');
 const superAdminRoutes = require('./routes/superAdminRoute');
 const amenityRoutes = require('./routes/amenityRoute');
 const hoaAdminRoutes = require('./routes/hoaAdminRoute');
+const residentRoutes = require('./routes/superAdminRoute');
 
 const app = express();
 connectDB();
@@ -38,6 +39,7 @@ app.use('/complaints', complaintRoutes);
 app.use('/superadmin', superAdminRoutes);
 app.use('/amenities', amenityRoutes);
 app.use('/hoaadmin', hoaAdminRoutes);
+app.use('/resident', residentRoutes);
 
 // Global error handler (simple)
 app.use((err, req, res, next) => {
