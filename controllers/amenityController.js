@@ -3,25 +3,10 @@ const Amenity = require("../models/Amenity");
 // ---------------- CREATE AMENITY ----------------
 exports.createAmenity = async (req, res) => {
   try {
-    const { name, description, isActive } = req.body;
-    // if (!community) {
-    //   return res.status(400).json({ message: "Community ID is required" });
-    // }
+    const { name, description, isActive, maintenanceStatus } = req.body;
 
-    // const existing = await Amenity.findOne({ name, community });
-    // if (existing)
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Amenity already exists in this community" });
-
-    const amenity = new Amenity({ name, description, isActive });
+    const amenity = new Amenity({ name, description, isActive, maintenanceStatus });
     await amenity.save();
-
-    // await Community.findByIdAndUpdate(
-    //   community,
-    //   { $push: { amenities: amenity._id } },
-    //   { new: true }
-    // );
 
     res.status(201).json({ message: "Amenity created", amenity });
   } catch (err) {
@@ -45,12 +30,12 @@ exports.getAllAmenities = async (req, res) => {
 exports.updateAmenity = async (req, res) => {
   try {
     const { amenityId } = req.params;
-    const { name, description, isActive, community, maintenanceStatus } =
+    const { name, description, isActive, maintenanceStatus } =
       req.body;
 
     const amenity = await Amenity.findByIdAndUpdate(
       amenityId,
-      { name, description, isActive, community, maintenanceStatus },
+      { name, description, isActive, maintenanceStatus },
       { new: true, runValidators: true }
     );
 
