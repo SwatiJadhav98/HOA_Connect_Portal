@@ -121,7 +121,13 @@ exports.deleteCommunity = async (req, res) => {
 exports.replaceHoaAdmin = async (req, res) => {
   try {
     const { communityId } = req.params;
-    const { newAdminName, newAdminEmail, newAdminPassword } = req.body;
+    const {
+      newAdminName,
+      newAdminEmail,
+      newAdminPassword,
+      newAdminPhoneNo,
+      amenities,           // array of amenity IDs to set
+    } = req.body;
 
     const community = await Community.findById(communityId);
     if (!community)
@@ -137,21 +143,23 @@ exports.replaceHoaAdmin = async (req, res) => {
       email: newAdminEmail,
       password: hashedPassword,
       role: "admin",
+      phoneNo: newAdminPhoneNo,
       community: community._id,
     });
     await newHoaAdmin.save();
 
-    // Link new HOA Admin to Community
+    // Update community: link new admin + replace amenities
     community.user = newHoaAdmin._id;
+    if (Array.isArray(amenities)) {
+      community.amenities = amenities;
+    }
     await community.save();
 
-    res
-      .status(200)
-      .json({
-        message: "HOA Admin replaced successfully",
-        community,
-        newHoaAdmin,
-      });
+    res.status(200).json({
+      message: "HOA Admin and community amenities updated successfully",
+      community,
+      newHoaAdmin,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -174,10 +182,8 @@ exports.getGlobalPayments = async (req, res) => {
 exports.sendNotification = async (req, res) => {
   try {
     const { title, message } = req.body;
-
     // Send to all users
     const recipients = await User.find({}, "_id");
-
     const notification = new Notification({
       title,
       message,
@@ -185,10 +191,11 @@ exports.sendNotification = async (req, res) => {
       createdBy: req.user._id,
     });
     await notification.save();
-
     res.status(200).json({ message: "Notification sent", notification });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
