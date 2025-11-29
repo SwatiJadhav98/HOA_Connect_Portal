@@ -4,6 +4,7 @@ const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
 // Controllers
+const { createAnnouncement } = require('../controllers/hoaAdmin/announcementController');
 const { createResident, deleteResident, getResidents, updateResident} = require('../controllers/hoaAdmin/residentController');
 const {getAmenities, updateAmenity, getAmenityById} = require('../controllers/hoaAdmin/amenityController');
 const { getComplaints, updateComplaintStatus} = require('../controllers/hoaAdmin/complaintController');
@@ -19,11 +20,13 @@ const { replaceAdmin} = require('../controllers/hoaAdmin/replaceAdminController'
 // router.use(protect);
 // router.use(authorizeRoles('admin'));
 
-router.get('/test', protect, (req, res) => {
-  console.log("✅ Middleware executed. User:", req.user);
-  res.json({ message: "Middleware test", user: req.user });
-});
+// router.get('/test', protect, (req, res) => {
+//   console.log("✅ Middleware executed. User:", req.user);
+//   res.json({ message: "Middleware test", user: req.user });
+// });
 
+//Announcements
+router.post('/postannounce',protect, authorizeRoles("admin"), createAnnouncement);
 
 // Residents
 router.post('/addresident', protect, authorizeRoles("admin"), createResident);

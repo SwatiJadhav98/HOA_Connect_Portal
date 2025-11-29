@@ -1,9 +1,9 @@
-const Community = require("../models/Community");
-const User = require("../models/User");
-const Notification = require("../models/Notification");
-const Amenity = require("../models/Amenity");
+const Community = require("../../models/Community");
+const User = require("../../models/User");
+const Notification = require("../../models/Notification");
+const Amenity = require("../../models/Amenity");
 const bcrypt = require("bcryptjs");
-const Payment = require("../models/Payment");
+const Payment = require("../../models/Payment");
 
 // -------------------- CREATE COMMUNITY --------------------
 exports.createCommunity = async (req, res) => {
@@ -41,12 +41,6 @@ exports.createCommunity = async (req, res) => {
       role: "admin",
     });
     await hoaAdmin.save();
-
-    //Validate Amenities
-    // const amemityDocs = await Amenity.find({ _id: { $in: ammenities } });
-    // if (amemityDocs.length !== ammenities.length) {
-    //   return res.status(400).json({ message: 'One or more amenities are invalid' });
-    // }
 
     // Create Community
     const community = new Community({
@@ -147,7 +141,7 @@ exports.replaceHoaAdmin = async (req, res) => {
       community: community._id,
     });
     await newHoaAdmin.save();
-
+    const savedAdmin = await User.findById(newHoaAdmin._id);
     // Update community: link new admin + replace amenities
     community.user = newHoaAdmin._id;
     if (Array.isArray(amenities)) {
@@ -158,7 +152,7 @@ exports.replaceHoaAdmin = async (req, res) => {
     res.status(200).json({
       message: "HOA Admin and community amenities updated successfully",
       community,
-      newHoaAdmin,
+      newHoaAdmin: savedAdmin,
     });
   } catch (err) {
     console.error(err);
@@ -198,4 +192,27 @@ exports.sendNotification = async (req, res) => {
   }
 };
 
+exports.getNotification = async (req, res) => {
+  try {
+    const userId = req.user._id; // user from protect middleware
 
+    
+    const notifications = await Notification.find({ recipients: userId })
+      .populate("createdBy", "name")     // show who created notification
+      .sort({ createdAt: -1 });          // latest first
+
+    res.status(200).json({
+      success: true,
+      count: notifications.length,
+      notifications,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch notifications",
+      error: error.message,
+    });
+  }
+};

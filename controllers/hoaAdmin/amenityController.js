@@ -1,11 +1,17 @@
 const Amenity = require('../../models/Amenity');
+const Community = require('../../models/Community');
 
 exports.getAmenities = async (req, res) => {
   try {
 
     const communityId = req.user.community;
 
-    if (!communityId) return res.status(400).json({ message: 'HOA Admin is not assigned to any community.' });
+    const community = await Community.findById(communityId).populate("amenities");
+    
+    if (!community) {
+      return res.status(404).json({ message: "Community not found." });
+    }
+    
     const amenities = await Amenity.find({ community: communityId });
     res.status(200).json(amenities);
   } catch (err) {

@@ -1,21 +1,24 @@
 const Payment = require("../../models/Payment");
 const Receipt = require("../../models/Receipt");
 const Notification = require("../../models/Notification");
-// const generateReceiptPDF= require('../../utils/generateReceiptPDF');
-// const generateReceiptPDF = require('../../utils/generateReceiptPDF');
+const generatePdfReceipt = require('../../utils/generatePdfReceipt');
 const User = require("../../models/User");
 const Community = require("../../models/Community");
 
 exports.initiatePayment = async (req, res) => {
   try {
-    const { amount, billType, method } = req.body;
+    const { amount, billType, method, userId, communityId } = req.body;
+
+    if (!userId || !communityId) {
+      return res.status(400).json({ message: "userId and communityId are required" });
+    }
 
     const payment = await Payment.create({
       amount,
       method,
       billType,
-      community: req.user.community,
-      user: req.user._id,
+      community: communityId,
+      user: userId,
       status: "pending",
     });
 
@@ -50,7 +53,7 @@ exports.paymentSuccess = async (req, res) => {
     const community = await Community.findById(payment.community);
 
     // Generate PDF
-    const pdfPath = await generateReceiptPDF(receipt, user, community);
+    const pdfPath = await generatePdfReceipt(receipt, user, community);
 
     // Save path to DB
     receipt.pdfPath = pdfPath;
@@ -70,7 +73,7 @@ exports.downloadReceipt = async (req, res) => {
   try {
     const receipt = await Receipt.findById(req.params.id);
 
-    if (!receipt || receipt.user.toString() !== req.user._id.toString()) {
+    if (!receipt) {
       return res.status(404).json({ message: "Receipt not found" });
     }
 
@@ -79,52 +82,3 @@ exports.downloadReceipt = async (req, res) => {
     res.status(500).json({ message: "Error downloading receipt", error: err.message });
   }
 };
-
-//Old
-// exports.createPayment = async (req, res) => {
-//   try {
-//     const { amount, method } = req.body;
-
-//     const userId = req.user._id;
-//     const coomunityId = req.user.coomunityId;
-
-//     const payment = await Payment.create({
-//       amount,
-//       method,
-//       user: userId,
-//       community: communityId,
-//       status: "completed",
-//     });
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Payment completed successfully",
-//       payment,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
-
-// exports.getPaymentHistory = async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-
-//     const payments = await Payment.find({ user: userId }).sort({
-//       transactionDate: -1,
-//     });
-
-//     res.status(200).json({
-//       success: true,
-//       payments,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };

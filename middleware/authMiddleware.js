@@ -26,7 +26,7 @@ const protect = async (req, res, next) => {
       role: user.role,
       phoneNo: user.phoneNo,
       houseNumber: user.houseNumber,
-      communityId: user.community,   // important line
+      community: user.community,   // important line
       isResident: user.isResident,
     };
 

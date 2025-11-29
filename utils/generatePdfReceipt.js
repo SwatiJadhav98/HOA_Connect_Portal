@@ -2,7 +2,7 @@ const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
 
-const generateReceiptPDF = async (receipt, user, community) => {
+const generatePdfReceipt = async (receipt, user, community) => {
   return new Promise((resolve, reject) => {
     const fileName = `receipt_${receipt.transactionId}.pdf`;
     const filePath = path.join(__dirname, `../uploads/receipts/${fileName}`);
@@ -41,4 +41,4 @@ const generateReceiptPDF = async (receipt, user, community) => {
   });
 };
 
-module.exports = generateReceiptPDF;
+module.exports = generatePdfReceipt;

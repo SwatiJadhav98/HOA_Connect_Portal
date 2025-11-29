@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const { registerResidentSelf } = require('../controllers/resident/registrationController');
 const { getAnnouncement } = require('../controllers/resident/announcementController');
 const { submitComplaint, getMyComplaint, updateComplaint } = require('../controllers/resident/complaintController');
 // const { makePayment, getPaymentHistory} = require('../controllers/resident/paymentController');
@@ -9,6 +10,9 @@ const { getProfile, updateProfile} = require('../controllers/resident/profileCon
 const { getDocuments, downloadDocument } = require('../controllers/resident/documentcontoller');
 const { getMeetings, rsvpMeeting, joinMeeting } = require('../controllers/resident/meetingController');
 const { initiatePayment , paymentSuccess, downloadReceipt } = require("../controllers/resident/paymentController");
+
+//-----------------Register-------------------
+router.post("/register", registerResidentSelf);
 
 //----------Announcement-----------------
 router.get("/getannouncements", getAnnouncement);

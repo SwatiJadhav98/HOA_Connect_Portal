@@ -1,4 +1,4 @@
-const Amenity = require("../models/Amenity");
+const Amenity = require("../../models/Amenity");
 
 // ---------------- CREATE AMENITY ----------------
 exports.createAmenity = async (req, res) => {

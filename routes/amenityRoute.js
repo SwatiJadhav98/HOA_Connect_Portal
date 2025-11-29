@@ -4,7 +4,7 @@ const { createAmenity,
   getAllAmenities,
   updateAmenity,
   deleteAmenity
-} = require('../controllers/amenityController');
+} = require('../controllers/superAdmin/amenityController');
 // const authMiddleware = require('../middleware/auth');
 const { protect, authorizeRoles } = require("../middleware/authMiddleware");
 

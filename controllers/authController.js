@@ -34,20 +34,20 @@ exports.register = async (req, res) => {
     //   return res.status(403).json({ message: 'Only SuperAdmin can create Admins' });
     // }
 
-    if (role === ROLES.RESIDENT) {
-      if (requester.role !== ROLES.ADMIN) {
-        return res
-          .status(403)
-          .json({ message: "Only Admin can create Residents." });
-      }
+    // if (role === ROLES.RESIDENT) {
+    //   if (requester.role !== ROLES.ADMIN) {
+    //     return res
+    //       .status(403)
+    //       .json({ message: "Only Admin can create Residents." });
+    //   }
 
-      // Resident should automatically get admin’s community
-      if (!req.user?.communityId) {
-        return res
-          .status(400)
-          .json({ message: "Admin is not assigned to any community." });
-      }
-    }
+    //   // Resident should automatically get admin’s community
+    //   if (!req.user?.communityId) {
+    //     return res
+    //       .status(400)
+    //       .json({ message: "Admin is not assigned to any community." });
+    //   }
+    // }
 
     //Duplicate email checking
     const existing = await User.findOne({ email });
@@ -164,7 +164,7 @@ exports.login = async (req, res) => {
 exports.getAllAdmins = async (req, res) => {
   try {
     const admins = await User.find({ role: "admin" })
-      .populate("communityId") // optional if you want to include community details
+      .populate("community") // optional if you want to include community details
       .select("-password"); // exclude password field for security
 
     if (!admins || admins.length === 0) {
@@ -175,5 +175,50 @@ exports.getAllAdmins = async (req, res) => {
   } catch (error) {
     console.error("Error fetching admins:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.registerAdmin = async (req, res) => {
+  try {
+    const requester = req.user; // must be SUPERADMIN
+    const { name, email, password, phoneNo, houseNumber, communityId } = req.body;
+
+    if (requester.role !== ROLES.SUPERADMIN) {
+      return res.status(403).json({ message: "Only SuperAdmin can register Admins" });
+    }
+
+    if (!communityId)
+      return res.status(400).json({ message: "Community ID is required" });
+
+    const community = await Community.findById(communityId);
+    if (!community)
+      return res.status(400).json({ message: "Community not found" });
+
+    const existing = await User.findOne({ email });
+    if (existing)
+      return res.status(400).json({ message: "Email already registered" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: ROLES.ADMIN,
+      phoneNo,
+      houseNumber,
+      communityId,
+    });
+
+    community.user = user._id;
+    await community.save();
+
+    res.status(201).json({
+      message: "Admin registered successfully",
+      user,
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: "Error registering admin", error: error.message });
   }
 };
