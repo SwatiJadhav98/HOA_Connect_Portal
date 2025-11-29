@@ -4,12 +4,13 @@ const {createCommunity, getAllCommunities, deleteCommunity, replaceHoaAdmin, get
 const { createAmenity } = require('../controllers/superAdmin/amenityController');
 const { protect, authorizeRoles } = require("../middleware/authMiddleware");
 
+router.get('/getcommunities', getAllCommunities);
 router.use(protect); // all routes below need authentication
 
 router.post("/addAmenities", authorizeRoles("superadmin"), createAmenity);
 
 router.post("/addCommunity", authorizeRoles("superadmin"), createCommunity);
-router.get('/getcommunities', getAllCommunities);
+
 router.delete('/deletecommunity/:communityId', authorizeRoles("superadmin"), deleteCommunity);
 router.put('/updatecommunities/:communityId/replace-admin', authorizeRoles("superadmin"), replaceHoaAdmin);
 
