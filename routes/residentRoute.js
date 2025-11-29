@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+const { protect, authorizeRoles } = require("../middleware/authMiddleware");
 const { registerResidentSelf } = require('../controllers/resident/registrationController');
 const { getAnnouncement } = require('../controllers/resident/announcementController');
 const { submitComplaint, getMyComplaint, updateComplaint } = require('../controllers/resident/complaintController');
@@ -15,7 +16,12 @@ const { initiatePayment , paymentSuccess, downloadReceipt } = require("../contro
 router.post("/register", registerResidentSelf);
 
 //----------Announcement-----------------
-router.get("/getannouncements", getAnnouncement);
+router.get(
+  "/getannouncements",
+  protect,  
+  authorizeRoles("resident"), 
+  getAnnouncement
+);
 
 //--------------Complaints--------------------
 router.post("/submitcomplaint", submitComplaint);
