@@ -2,10 +2,17 @@ const Announcement = require('../../models/Announcement');
 
 exports.getAnnouncement = async (req, res) => {
   try{
-     
-    const communityId = req.user.communityId;
+     console.log("User in request:", req.user);
+    const communityId = req.user?.community;
 
-    const announcements = await Announcement.findOne({ community: communityId })
+    if (!communityId) {
+      return res.status(400).json({
+        success: false,
+        message: "communityId not found in user token"
+      });
+    }
+
+    const announcements = await Announcement.find({ community: communityId })
       .populate("createdBy", "name")
       .sort({createdAt: -1});
 

@@ -31,7 +31,7 @@ exports.registerResidentSelf = async (req, res) => {
       role,
       phoneNo,
       houseNumber,
-      communityId,
+      community: req.body.communityId,
     });
 
     res.status(201).json({
