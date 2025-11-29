@@ -9,7 +9,7 @@ router.use(protect); // all routes below need authentication
 router.post("/addAmenities", authorizeRoles("superadmin"), createAmenity);
 
 router.post("/addCommunity", authorizeRoles("superadmin"), createCommunity);
-router.get('/getcommunities', authorizeRoles("superadmin"), getAllCommunities);
+router.get('/getcommunities', getAllCommunities);
 router.delete('/deletecommunity/:communityId', authorizeRoles("superadmin"), deleteCommunity);
 router.put('/updatecommunities/:communityId/replace-admin', authorizeRoles("superadmin"), replaceHoaAdmin);
 
