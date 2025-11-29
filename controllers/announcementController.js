@@ -23,11 +23,13 @@ exports.createAnnouncement = async (req, res) => {
 
 exports.getAnnouncements = async (req, res) => {
   try {
-    if (!req.user?.communityId) {
-      return res.status(400).json({ message: "Community not found in user" });
+    const communityId = req.user.community;
+
+    if (!communityId) {
+      return res.status(400).json({ message: "HOA Admin is not assigned to any community." });
     }
 
-    const announcements = await Announcement.find({ communityId: req.user.communityId })
+    const announcements = await Announcement.find({ community: communityId })
       .populate("createdBy", "name email")
       .sort({ createdAt: -1 });
 
