@@ -18,11 +18,11 @@ exports.uploadDocument = async (req, res) => {
     }
 
     const { title, description } = req.body;
-
+    const savedFileName = req.file.filename;
     const newDoc = new Document({
       title,
       description,
-      filePath: req.file.path,
+      filePath: savedFileName,
       fileType: req.file.mimetype,
       user: req.user._id,
       community: req.user.community
