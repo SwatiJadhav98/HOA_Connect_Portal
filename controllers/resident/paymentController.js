@@ -9,17 +9,22 @@ exports.initiatePayment = async (req, res) => {
   try {
     const { amount, billType, method, userId, communityId } = req.body;
 
+    console.log("Payment Data =>", req.body);
+
     if (!userId || !communityId) {
       return res.status(400).json({ message: "userId and communityId are required" });
     }
 
+    const transactionId = "TXN-" + Date.now();
+
     const payment = await Payment.create({
-      amount,
+      amount: Number(amount),
       method,
       billType,
       community: communityId,
       user: userId,
       status: "pending",
+      transactionId
     });
 
     res.json({
@@ -80,5 +85,19 @@ exports.downloadReceipt = async (req, res) => {
     res.download(receipt.pdfPath);
   } catch (err) {
     res.status(500).json({ message: "Error downloading receipt", error: err.message });
+  }
+};
+
+exports.getPaymentHistory = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const payments = await Payment.find({ user: userId })
+      .populate("community", "name")
+      .sort({ transactionDate: -1 });
+
+    res.json({ success: true, payments });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error fetching payment history" });
   }
 };
