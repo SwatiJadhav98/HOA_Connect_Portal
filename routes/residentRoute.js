@@ -24,35 +24,34 @@ router.get(
 );
 
 //--------------Complaints--------------------
-router.post("/submitcomplaint", submitComplaint);
-router.get("/getmycomplaint", getMyComplaint);
-router.put("/updatecompalint/:id", updateComplaint);
+router.post("/submitcomplaint",protect, authorizeRoles("resident"), submitComplaint);
+router.get("/getmycomplaint", protect, authorizeRoles("resident"), getMyComplaint);
+router.put("/updatecompalint/:id",protect, authorizeRoles("resident"), updateComplaint);
 
 // //------------------Payment--------------
 // router.post("/makepayment", makePayment);
 // rouetr.get("/getpaymenthistory", getPaymentHistory);
 
 //-----------------Amenities-----------------
-router.post("/bookamenity", bookAminity);
-router.get("/getmybookamenity", getMyBooking);
+router.post("/bookamenity",protect, authorizeRoles("resident"), bookAminity);
+router.get("/getmybookamenity",protect, authorizeRoles("resident"), getMyBooking);
 
 //-----------------Profile-----------------
-router.put("/updateprofile", updateProfile);
-router.get("/getmyprofile", getProfile);
+router.put("/updateprofile",protect, authorizeRoles("resident"), updateProfile);
+router.get("/getmyprofile",protect, authorizeRoles("resident"), getProfile);
 
 //-----------------Document-----------------
-router.get("/documents", getDocuments);
-router.get("/downloaddocument", downloadDocument);
+router.get("/documents",protect, authorizeRoles("resident"), getDocuments);
+router.get("/downloaddocument",protect, authorizeRoles("resident"), downloadDocument);
 
 //-----------------Meeting-----------------
-router.get("/meeting", getMeetings);
-router.put("/meetings/rsvp/:id", rsvpMeeting);
-router.get("/meetings/join/:id", joinMeeting);
+router.get("/meeting",protect, authorizeRoles("resident"), getMeetings);
+router.put("/meetings/rsvp/:id",protect, authorizeRoles("resident"), rsvpMeeting);
+router.get("/meetings/join/:id",protect, authorizeRoles("resident"), joinMeeting);
 
 //--------------------Payment------------------
-router.post("/payment/initiate", initiatePayment);
-router.put("/payment/:id/success", paymentSuccess);
-// router.get("/payment/my", getMyPayments);
-router.get("/payment/receipt/:id", downloadReceipt);   // PDF Download
+router.post("/payment/initiate",protect, authorizeRoles("resident"), initiatePayment);
+router.put("/payment/:id/success",protect, authorizeRoles("resident"), paymentSuccess);
+router.get("/payment/receipt/:id",protect, authorizeRoles("resident"), downloadReceipt);   
 
 module.exports = router;

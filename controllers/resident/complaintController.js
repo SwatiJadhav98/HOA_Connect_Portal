@@ -5,7 +5,7 @@ exports.submitComplaint = async (req, res) => {
   try {
 
     const { subject, description } = req.body;
-    const communityId = req.user.communityId;
+    const communityId = req.user.community;
     const userId = req.user._id;
 
     const complaint = await Complaints.create({

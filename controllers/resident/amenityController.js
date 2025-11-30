@@ -7,7 +7,7 @@ exports.bookAminity = async (req,res) => {
 
     const { amenityId, bookingDate} = req.body;
     const userId = req.user._id;
-    const communityId = req.user.communityId;
+    const communityId = req.user.community;
 
     const amenity = await Amenity.findOne({ _id: amenityId ,community: communityId});
 
