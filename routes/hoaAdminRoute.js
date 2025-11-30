@@ -4,6 +4,7 @@ const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
 
 // Controllers
+const { getHoaAdminDashboard } = require('../controllers/hoaAdmin/dashboardController');
 const { createAnnouncement, getAnnouncements } = require('../controllers/hoaAdmin/announcementController');
 const { createResident, deleteResident, getResidents, updateResident} = require('../controllers/hoaAdmin/residentController');
 const {getAmenities, updateAmenity, getAmenityById} = require('../controllers/hoaAdmin/amenityController');
@@ -15,6 +16,9 @@ const {getNotification, sendNotification} = require('../controllers/hoaAdmin/not
 const { createMeeting, getMeetings } = require('../controllers/hoaAdmin/meetingController');
 const { getAnalytics} = require('../controllers/hoaAdmin/analyticsController');
 const { replaceAdmin} = require('../controllers/hoaAdmin/replaceAdminController');
+
+//Dashboard
+router.get('/dashboard', protect, authorizeRoles("admin"), getHoaAdminDashboard);
 
 //Announcements
 router.post('/postannounce',protect, authorizeRoles("admin"), createAnnouncement);
