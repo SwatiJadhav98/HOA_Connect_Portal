@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const {createCommunity, getAllCommunities, deleteCommunity, replaceHoaAdmin, getGlobalPayments, sendNotification, getNotification } = require('../controllers/superAdmin/superAdminController');
-const { createAmenity } = require('../controllers/superAdmin/amenityController');
+const { createAmenity, getAllAmenities } = require('../controllers/superAdmin/amenityController');
 const { protect, authorizeRoles } = require("../middleware/authMiddleware");
 
 router.get('/getcommunities', getAllCommunities);
 router.use(protect); // all routes below need authentication
 
 router.post("/addAmenities", authorizeRoles("superadmin"), createAmenity);
+router.get("/getallamenities", authorizeRoles("superadmin"), getAllAmenities);
 
 router.post("/addCommunity", authorizeRoles("superadmin"), createCommunity);
 

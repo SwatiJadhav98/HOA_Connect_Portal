@@ -17,6 +17,7 @@ connectDB();
 
 app.use(express.json());
 app.use(cors());
+app.use("/uploads/receipts", express.static("uploads/receipts"));
 
 // Routes
 app.use('/auth', authRoutes);

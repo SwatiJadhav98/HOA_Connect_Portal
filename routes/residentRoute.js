@@ -10,7 +10,7 @@ const { bookAminity, getMyBooking } = require('../controllers/resident/amenityCo
 const { getProfile, updateProfile} = require('../controllers/resident/profileController');
 const { getDocuments, downloadDocument } = require('../controllers/resident/documentcontoller');
 const { getMeetings, rsvpMeeting, joinMeeting } = require('../controllers/resident/meetingController');
-const { initiatePayment , paymentSuccess, downloadReceipt } = require("../controllers/resident/paymentController");
+const { initiatePayment , paymentSuccess, downloadReceipt, getPaymentHistory } = require("../controllers/resident/paymentController");
 
 //-----------------Register-------------------
 router.post("/register", registerResidentSelf);
@@ -30,7 +30,6 @@ router.put("/updatecompalint/:id",protect, authorizeRoles("resident"), updateCom
 
 // //------------------Payment--------------
 // router.post("/makepayment", makePayment);
-// rouetr.get("/getpaymenthistory", getPaymentHistory);
 
 //-----------------Amenities-----------------
 router.post("/bookamenity",protect, authorizeRoles("resident"), bookAminity);
@@ -42,7 +41,7 @@ router.get("/getmyprofile",protect, authorizeRoles("resident"), getProfile);
 
 //-----------------Document-----------------
 router.get("/documents",protect, authorizeRoles("resident"), getDocuments);
-router.get("/downloaddocument",protect, authorizeRoles("resident"), downloadDocument);
+router.get("/downloaddocument/:id",protect, authorizeRoles("resident"), downloadDocument);
 
 //-----------------Meeting-----------------
 router.get("/meeting",protect, authorizeRoles("resident"), getMeetings);
@@ -53,5 +52,6 @@ router.get("/meetings/join/:id",protect, authorizeRoles("resident"), joinMeeting
 router.post("/payment/initiate",protect, authorizeRoles("resident"), initiatePayment);
 router.put("/payment/:id/success",protect, authorizeRoles("resident"), paymentSuccess);
 router.get("/payment/receipt/:id",protect, authorizeRoles("resident"), downloadReceipt);   
+router.get("/getpaymenthistory",protect, authorizeRoles("resident"), getPaymentHistory);
 
 module.exports = router;

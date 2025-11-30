@@ -11,19 +11,10 @@ const { getComplaints, updateComplaintStatus} = require('../controllers/hoaAdmin
 const { getPayments, updatePaymentStatus} = require('../controllers/hoaAdmin/paymentController');
 const { createPoll, getPolls} = require('../controllers/hoaAdmin/pollController');
 const { uploadDocument, deleteDocument, getDocuments } = require('../controllers/hoaAdmin/documentController');
+const {getNotification, sendNotification} = require('../controllers/hoaAdmin/notificationController');
 const { createMeeting, getMeetings } = require('../controllers/hoaAdmin/meetingController');
 const { getAnalytics} = require('../controllers/hoaAdmin/analyticsController');
 const { replaceAdmin} = require('../controllers/hoaAdmin/replaceAdminController');
-
-
-// Middleware
-// router.use(protect);
-// router.use(authorizeRoles('admin'));
-
-// router.get('/test', protect, (req, res) => {
-//   console.log("✅ Middleware executed. User:", req.user);
-//   res.json({ message: "Middleware test", user: req.user });
-// });
 
 //Announcements
 router.post('/postannounce',protect, authorizeRoles("admin"), createAnnouncement);
@@ -60,6 +51,10 @@ router.delete('/deletedocument/:id', protect, authorizeRoles("admin"), deleteDoc
 // Meetings
 router.post('/addmeeting', protect, authorizeRoles("admin"), createMeeting);
 router.get('/getmeetings', protect, authorizeRoles("admin"), getMeetings);
+
+//Notifications
+router.post("/sendnotification", protect, authorizeRoles("admin"), sendNotification);
+router.get("/getnotification", protect, authorizeRoles("admin"), getNotification)
 
 // Analytics
 router.get('/analytics', protect, authorizeRoles("admin"), getAnalytics);
