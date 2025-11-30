@@ -11,6 +11,8 @@ const { getProfile, updateProfile} = require('../controllers/resident/profileCon
 const { getDocuments, downloadDocument } = require('../controllers/resident/documentcontoller');
 const { getMeetings, rsvpMeeting, joinMeeting } = require('../controllers/resident/meetingController');
 const { initiatePayment , paymentSuccess, downloadReceipt, getPaymentHistory } = require("../controllers/resident/paymentController");
+const { getMeetings } = require('../controllers/resident/meetingController');
+const {votePoll, getPolls } = reuiqre('../controllers/resident/pollController');
 
 //-----------------Register-------------------
 router.post("/register", registerResidentSelf);
@@ -51,7 +53,14 @@ router.get("/meetings/join/:id",protect, authorizeRoles("resident"), joinMeeting
 //--------------------Payment------------------
 router.post("/payment/initiate",protect, authorizeRoles("resident"), initiatePayment);
 router.put("/payment/:id/success",protect, authorizeRoles("resident"), paymentSuccess);
-router.get("/payment/receipt/:id",protect, authorizeRoles("resident"), downloadReceipt);   
+router.get("/payment/receipt/:transactionId",protect, authorizeRoles("resident"), downloadReceipt);   
 router.get("/getpaymenthistory",protect, authorizeRoles("resident"), getPaymentHistory);
+
+//--------------------Notification----------------------
+router.get("/getnotification", protect, authorizeRoles("resident"), getNotification);
+
+//----------------------Poll Vote------------------------
+router.get('/getpolls', protect, authorizeRoles("resident"), getPolls);
+router.post('/votepoll', protect, authorizeRoles("resident"), votePoll);
 
 module.exports = router;

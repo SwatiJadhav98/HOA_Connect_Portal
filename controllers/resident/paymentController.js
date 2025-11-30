@@ -1,9 +1,11 @@
 const Payment = require("../../models/Payment");
 const Receipt = require("../../models/Receipt");
 const Notification = require("../../models/Notification");
-const generatePdfReceipt = require('../../utils/generatePdfReceipt');
+const generatePdfReceipt = require("../../utils/generatePdfReceipt");
 const User = require("../../models/User");
 const Community = require("../../models/Community");
+const path = require("path");
+const fs = require("fs");
 
 exports.initiatePayment = async (req, res) => {
   try {
@@ -12,7 +14,9 @@ exports.initiatePayment = async (req, res) => {
     console.log("Payment Data =>", req.body);
 
     if (!userId || !communityId) {
-      return res.status(400).json({ message: "userId and communityId are required" });
+      return res
+        .status(400)
+        .json({ message: "userId and communityId are required" });
     }
 
     const transactionId = "TXN-" + Date.now();
@@ -24,7 +28,7 @@ exports.initiatePayment = async (req, res) => {
       community: communityId,
       user: userId,
       status: "pending",
-      transactionId
+      transactionId,
     });
 
     res.json({
@@ -51,7 +55,7 @@ exports.paymentSuccess = async (req, res) => {
       community: payment.community,
       amount: payment.amount,
       transactionId: payment.transactionId,
-      billType: payment.billType
+      billType: payment.billType,
     });
 
     const user = await User.findById(payment.user);
@@ -67,24 +71,39 @@ exports.paymentSuccess = async (req, res) => {
     res.json({
       message: "Payment completed & receipt generated",
       receiptId: receipt._id,
-      pdf: pdfPath
+      pdf: pdfPath,
     });
   } catch (err) {
-    res.status(500).json({ message: "Error updating payment", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error updating payment", error: err.message });
   }
 };
 
 exports.downloadReceipt = async (req, res) => {
   try {
-    const receipt = await Receipt.findById(req.params.id);
+    const transactionId = req.params.transactionId;
+
+    const receipt = await Receipt.findOne({ transactionId });
 
     if (!receipt) {
       return res.status(404).json({ message: "Receipt not found" });
     }
 
-    res.download(receipt.pdfPath);
+    const filePath = receipt.pdfPath; // adjust path correctly
+    console.log("Looking for file: ", filePath);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: "Receipt file not found" });
+    }
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.download(filePath, `receipt_${transactionId}.pdf`);
+
   } catch (err) {
-    res.status(500).json({ message: "Error downloading receipt", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error downloading receipt", error: err.message });
   }
 };
 
@@ -98,6 +117,8 @@ exports.getPaymentHistory = async (req, res) => {
 
     res.json({ success: true, payments });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error fetching payment history" });
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching payment history" });
   }
 };

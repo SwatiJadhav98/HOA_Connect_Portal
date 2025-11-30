@@ -5,7 +5,7 @@ const path = require("path");
 const generatePdfReceipt = async (receipt, user, community) => {
   return new Promise((resolve, reject) => {
     const fileName = `receipt_${receipt.transactionId}.pdf`;
-    const filePath = path.join(__dirname, `../uploads/receipts/${fileName}`);
+    const filePath = path.join("uploads/receipts", fileName); // relative to root
 
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
 

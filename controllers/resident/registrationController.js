@@ -23,7 +23,6 @@ exports.registerResidentSelf = async (req, res) => {
       return res.status(400).json({ message: "Email already registered" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const isResidentValue = isResident === "true" || isResident === true;
     
     const user = await User.create({
       name,
@@ -33,7 +32,7 @@ exports.registerResidentSelf = async (req, res) => {
       phoneNo,
       houseNumber,
       community: req.body.communityId,
-      isResident: isResidentValue
+      isResident: true
     });
 
     res.status(201).json({
