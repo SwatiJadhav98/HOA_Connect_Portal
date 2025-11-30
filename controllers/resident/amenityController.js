@@ -1,5 +1,6 @@
 const Amenity = require('../../models/Amenity');
 const AmenityBooking = require('../../models/AmenityBooking');
+const Community = require('../../models/Community');
 
 exports.bookAminity = async (req,res) => {
 
@@ -43,7 +44,7 @@ exports.getMyBooking = async (req, res) => {
     const userId = req.user._id;
 
     const booking = await AmenityBooking.find({ user: userId})
-      .populate("amenity"," name description maintenancestatus")
+      .populate("amenity"," name description maintenanceStatus")
       .sort({ createdAt: -1});
 
     res.status(200).json({
@@ -58,3 +59,21 @@ exports.getMyBooking = async (req, res) => {
     });
   }
 }
+
+exports.getAmenitiesByResident = async (req, res) => {
+  try {
+
+    const communityId = req.user.community;
+
+    const community = await Community.findById(communityId).populate("amenities");
+    
+    if (!community) {
+      return res.status(404).json({ message: "Community not found." });
+    }
+    
+    // const amenities = await Amenity.find({ community: communityId });
+    res.status(200).json(community.amenities);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

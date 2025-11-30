@@ -1,7 +1,7 @@
 const Meeting = require("../../models/Meeting");
 const MeetingAttendee = require("../../models/MeetingAttendee");
 
-exports.getMeetings = async (req, res) => {
+exports.getMeetingsByResident = async (req, res) => {
   try {
     const meetings = await Meeting.find({ community: req.user.community })
       .sort({ meetingDate: 1 }); // upcoming first

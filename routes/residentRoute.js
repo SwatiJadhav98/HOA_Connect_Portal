@@ -6,13 +6,13 @@ const { registerResidentSelf } = require('../controllers/resident/registrationCo
 const { getAnnouncement } = require('../controllers/resident/announcementController');
 const { submitComplaint, getMyComplaint, updateComplaint } = require('../controllers/resident/complaintController');
 // const { makePayment, getPaymentHistory} = require('../controllers/resident/paymentController');
-const { bookAminity, getMyBooking } = require('../controllers/resident/amenityController');
+const { bookAminity, getMyBooking, getAmenitiesByResident } = require('../controllers/resident/amenityController');
 const { getProfile, updateProfile} = require('../controllers/resident/profileController');
 const { getDocuments, downloadDocument } = require('../controllers/resident/documentcontoller');
-const { getMeetings, rsvpMeeting, joinMeeting } = require('../controllers/resident/meetingController');
+const { getMeetingsByResident, rsvpMeeting, joinMeeting } = require('../controllers/resident/meetingController');
 const { initiatePayment , paymentSuccess, downloadReceipt, getPaymentHistory } = require("../controllers/resident/paymentController");
-const { getMeetings } = require('../controllers/resident/meetingController');
-const {votePoll, getPolls } = reuiqre('../controllers/resident/pollController');
+const { getNotification } = require('../controllers/resident/notificationController');
+const {votePoll, getPolls } = require('../controllers/resident/pollController');
 
 //-----------------Register-------------------
 router.post("/register", registerResidentSelf);
@@ -36,6 +36,7 @@ router.put("/updatecompalint/:id",protect, authorizeRoles("resident"), updateCom
 //-----------------Amenities-----------------
 router.post("/bookamenity",protect, authorizeRoles("resident"), bookAminity);
 router.get("/getmybookamenity",protect, authorizeRoles("resident"), getMyBooking);
+router.get('/getamenitiesbyresident',protect, authorizeRoles("resident"), getAmenitiesByResident);
 
 //-----------------Profile-----------------
 router.put("/updateprofile",protect, authorizeRoles("resident"), updateProfile);
@@ -46,7 +47,7 @@ router.get("/documents",protect, authorizeRoles("resident"), getDocuments);
 router.get("/downloaddocument/:id",protect, authorizeRoles("resident"), downloadDocument);
 
 //-----------------Meeting-----------------
-router.get("/meeting",protect, authorizeRoles("resident"), getMeetings);
+router.get("/getmeetingbyresident",protect, authorizeRoles("resident"), getMeetingsByResident);
 router.put("/meetings/rsvp/:id",protect, authorizeRoles("resident"), rsvpMeeting);
 router.get("/meetings/join/:id",protect, authorizeRoles("resident"), joinMeeting);
 
