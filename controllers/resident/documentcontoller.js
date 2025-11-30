@@ -13,29 +13,6 @@ exports.getDocuments = async (req, res) => {
   }
 };
 
-// exports.downloadDocument = async (req, res) => {
-//   try {
-//     const document = await Document.findOne({
-//       _id: req.params.id,
-//       community: req.user.community // ensure resident belongs to same community
-//     });
-
-//     if (!document) {
-//       return res.status(404).json({ message: "Document not found" });
-//     }
-
-//     const filePath = path.join(__dirname, "../../uploads/documents", document.filePath);
-
-//     if (!fs.existsSync(filePath)) {
-//       return res.status(404).json({ message: "File not found on server" });
-//     }
-//      const fileName = document.title + path.extname(document.filePath);
-
-//     res.download(filePath, document.title + path.extname(filePath)); // sets file name on download
-//   } catch (err) {
-//     res.status(500).json({ message: "Error downloading document", error: err.message });
-//   }
-// };
 exports.downloadDocument = async (req, res) => {
   try {
     const document = await Document.findOne({

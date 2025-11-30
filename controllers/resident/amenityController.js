@@ -10,12 +10,30 @@ exports.bookAminity = async (req,res) => {
     const userId = req.user._id;
     const communityId = req.user.community;
 
-    const amenity = await Amenity.findOne({ _id: amenityId ,community: communityId});
+    // const amenity = await Amenity.findOne({ _id: amenityId ,community: communityId});
 
-    if(!amenity) return res.status(400).json({ success: false, message: "Amenity not found in Community"});
+    // Load community with its amenities
+    const community = await Community.findById(communityId).populate("amenities");
+    if (!community) return res.status(400).json({ message: "Community not found" });
 
-    if( amenity.maintenanceStatus !== 'available'){
-      return res.status(400).json({ success: false, message: "Amenity is currently Not available."});
+    // Check amenity exists inside community.amenities
+    const amenity = community.amenities.find(a => a._id.toString() === amenityId);
+    if (!amenity) return res.status(400).json({ message: "Amenity not found in your Community" });
+
+    if (amenity.maintenanceStatus !== "available") {
+      return res.status(400).json({ message: "Amenity is currently not available" });
+    }
+
+    const alreadyBooked = await AmenityBooking.findOne({
+      amenity: amenityId,
+      user: userId
+    });
+
+    if (alreadyBooked) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already booked this amenity."
+      });
     }
 
     const booking = await AmenityBooking.create({
