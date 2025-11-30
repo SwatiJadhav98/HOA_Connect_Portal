@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const { protect, authorizeRoles } = require("../middleware/authMiddleware");
+
+const { getResidentDashboardCounts } = require('../controllers/resident/dashboardController');
 const { registerResidentSelf } = require('../controllers/resident/registrationController');
 const { getAnnouncement } = require('../controllers/resident/announcementController');
 const { submitComplaint, getMyComplaint, updateComplaint } = require('../controllers/resident/complaintController');
@@ -17,13 +19,11 @@ const {votePoll, getPolls } = require('../controllers/resident/pollController');
 //-----------------Register-------------------
 router.post("/register", registerResidentSelf);
 
+//----------------------Dashboard-----------------
+router.get('/dashboard/counts', protect, authorizeRoles("resident"), getResidentDashboardCounts);
+
 //----------Announcement-----------------
-router.get(
-  "/getannouncements",
-  protect,  
-  authorizeRoles("resident"), 
-  getAnnouncement
-);
+router.get("/getannouncements", protect, authorizeRoles("resident"), getAnnouncement);
 
 //--------------Complaints--------------------
 router.post("/submitcomplaint",protect, authorizeRoles("resident"), submitComplaint);
