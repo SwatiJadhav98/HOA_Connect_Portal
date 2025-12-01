@@ -7,29 +7,42 @@ const Announcement = require("../../models/Announcement");
 const Amenity = require("../../models/Amenity");
 const Payment = require("../../models/Payment");
 
-exports.getHoaAdminDashboard =  async (req, res) => {
+exports.getHoaAdminDashboard = async (req, res) => {
   try {
-    const [communities, residents, hoaAdmins, complaints, announcements, amenities, payments] =
-      await Promise.all([
-        Community.countDocuments(),
-        User.countDocuments({ role: "resident" }),
-        User.countDocuments({ role: "admin" }),
-        Complaint.countDocuments(),
-        Announcement.countDocuments(),
-        Amenity.countDocuments(),
-        Payment.aggregate([{ $group: { _id: null, total: { $sum: "$amount" } } }])
-      ]);
+    const communityId = req.user.community; // Admin's community
+
+    // Count residents in this community
+    const residents = await User.countDocuments({ role: "resident", community: communityId });
+
+    // Count HOA admins in this community
+    const hoaAdmins = await User.countDocuments({ role: "admin", community: communityId });
+
+    // Count complaints in this community
+    const complaints = await Complaint.countDocuments({ community: communityId });
+
+    // Count announcements in this community
+    const announcements = await Announcement.countDocuments({ community: communityId });
+
+    // Count amenities in this community
+    const community = await Community.findById(communityId).populate("amenities");
+    const amenitiesCount = community?.amenities?.length || 0;
+
+    // Sum payments in this community
+    const paymentsAgg = await Payment.aggregate([
+      { $match: { community: communityId } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+    const totalPayments = paymentsAgg[0]?.total || 0;
 
     res.json({
       success: true,
       data: {
-        communities,
         residents,
         hoaAdmins,
         complaints,
         announcements,
-        amenities,
-        totalPayments: payments[0]?.total || 0,
+        amenities: amenitiesCount,
+        totalPayments,
       },
     });
   } catch (err) {

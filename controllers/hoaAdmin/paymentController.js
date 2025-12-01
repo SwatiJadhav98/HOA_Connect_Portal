@@ -31,3 +31,39 @@ exports.updatePaymentStatus = async (req, res) => {
     res.status(500).json({ message: 'Error updating payment', error: err.message });
   }
 };
+
+exports.getPaymentsByDate = async (req, res) => {
+  try {
+    const communityId = req.user.community; // HOA Admin's community
+    const { from, to } = req.query;
+
+    // Build date filter
+    let dateFilter = {};
+    if (from && to) {
+      dateFilter.transactionDate = {
+        $gte: new Date(from),
+        $lte: new Date(to),
+      };
+    } else if (from) {
+      dateFilter.transactionDate = { $gte: new Date(from) };
+    } else if (to) {
+      dateFilter.transactionDate = { $lte: new Date(to) };
+    }
+
+    const payments = await Payment.find({
+      community: communityId,
+      ...dateFilter,
+    })
+      .populate("user", "name")
+      .populate("community", "name")
+      .sort({ date: -1 });
+
+    res.json({ success: true, data: payments });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Unable to fetch payments",
+      error: err.message,
+    });
+  }
+};

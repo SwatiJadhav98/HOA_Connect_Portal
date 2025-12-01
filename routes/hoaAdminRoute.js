@@ -9,7 +9,7 @@ const { createAnnouncement, getAnnouncements } = require('../controllers/hoaAdmi
 const { createResident, deleteResident, getResidents, updateResident} = require('../controllers/hoaAdmin/residentController');
 const {getAmenities, updateAmenity, getAmenityById} = require('../controllers/hoaAdmin/amenityController');
 const { getComplaints, updateComplaintStatus} = require('../controllers/hoaAdmin/complaintController');
-const { getPayments, updatePaymentStatus} = require('../controllers/hoaAdmin/paymentController');
+const { getPayments, updatePaymentStatus, getPaymentsByDate} = require('../controllers/hoaAdmin/paymentController');
 const { createPoll, getPolls} = require('../controllers/hoaAdmin/pollController');
 const { uploadDocument, deleteDocument, getDocuments } = require('../controllers/hoaAdmin/documentController');
 const {getNotification, sendNotification} = require('../controllers/hoaAdmin/notificationController');
@@ -42,6 +42,7 @@ router.put('/updatecomplaint/:id', protect, authorizeRoles("admin"), updateCompl
 // Payments
 router.get('/getpayments', protect, authorizeRoles("admin"), getPayments);
 router.put('/updatepaymentstatus/:id', protect, authorizeRoles("admin"), updatePaymentStatus);
+router.get('/search',protect,authorizeRoles("admin") ,getPaymentsByDate)
 
 // Polls
 router.post('/addpoll', protect, authorizeRoles("admin"), createPoll);
