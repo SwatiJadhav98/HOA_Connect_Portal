@@ -43,15 +43,22 @@ exports.getNotification = async (req, res) => {
 
     const notifications = await Notification.find({
       community: communityId,
-      recipients: userId, // only if user is a recipient
+      recipients: userId,
     })
-      .populate("createdBy", "name role")
+      .populate({
+        path: "createdBy",
+        select: "name role",
+        match: { role: "superadmin" }  // filter only where createdBy is superadmin
+      })
       .sort({ createdAt: -1 });
+
+    // Remove notifications where populate did not match
+    const filteredNotifications = notifications.filter(n => n.createdBy);
 
     res.status(200).json({
       success: true,
-      count: notifications.length,
-      notifications,
+      count: filteredNotifications.length,
+      notifications: filteredNotifications,
     });
 
   } catch (error) {
