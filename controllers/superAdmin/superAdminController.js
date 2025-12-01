@@ -29,7 +29,6 @@ exports.getSuperAdminDashboard = async (req, res) => {
   }
 };
 
-
 // -------------------- CREATE COMMUNITY --------------------
 exports.createCommunity = async (req, res) => {
   try {
@@ -200,17 +199,39 @@ exports.getGlobalPayments = async (req, res) => {
 // -------------------- SEND NOTIFICATION TO COMMUNITY --------------------
 exports.sendNotification = async (req, res) => {
   try {
-    const { title, message } = req.body;
-    // Send to all users
-    const recipients = await User.find({}, "_id");
+    const { title, message, communityId } = req.body;
+
+    if (!communityId) {
+      return res.status(400).json({ message: "communityId is required" });
+    }
+
+    // Find ONLY Admin(s) of this selected community
+    const recipients = await User.find(
+      { community: communityId, role: "admin" },
+      "_id"
+    );
+
+    if (recipients.length === 0) {
+      return res.status(404).json({ message: "No admin found for this community" });
+    }
+
     const notification = new Notification({
       title,
       message,
       recipients: recipients.map((u) => u._id),
-      createdBy: req.user._id,
+      community: communityId,
+      createdBy: req.user._id, // super admin
     });
+
     await notification.save();
-    res.status(200).json({ message: "Notification sent", notification });
+
+    res.status(200).json({
+      message: "Notification sent successfully to the admin(s) of this community",
+      sentTo: recipients.length,
+      recipients: recipients.map((u) => u._id),
+      notification,
+    });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error", error: err.message });
