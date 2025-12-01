@@ -62,6 +62,6 @@ router.get("/getnotification", protect, authorizeRoles("resident"), getNotificat
 
 //----------------------Poll Vote------------------------
 router.get('/getpolls', protect, authorizeRoles("resident"), getPolls);
-router.post('/votepoll', protect, authorizeRoles("resident"), votePoll);
+router.post('/votepoll/:id', protect, authorizeRoles("resident"), votePoll);
 
 module.exports = router;

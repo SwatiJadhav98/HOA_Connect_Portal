@@ -7,8 +7,7 @@ exports.getNotification = async (req, res) => {
     const communityId = req.user.community;
 
     const notifications = await Notification.find({
-      community: communityId,
-      recipients: userId, // only if user is a recipient
+      community: communityId
     })
       .populate("createdBy", "name role")
       .sort({ createdAt: -1 });

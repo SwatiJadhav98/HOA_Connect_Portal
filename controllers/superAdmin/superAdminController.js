@@ -5,6 +5,31 @@ const Amenity = require("../../models/Amenity");
 const bcrypt = require("bcryptjs");
 const Payment = require("../../models/Payment");
 
+//--------------------Dashboard-------------------
+exports.getSuperAdminDashboard = async (req, res) => {
+  try {
+    const totalCommunities = await Community.countDocuments();
+    const totalHOAAdmins = await User.countDocuments({ role: "admin" });
+    const totalAmenities = await Amenity.countDocuments();
+
+    res.status(200).json({
+      success: true,
+      totalCommunities,
+      totalHOAAdmins,
+      totalAmenities,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to load dashboard stats",
+      error: error.message,
+    });
+  }
+};
+
+
 // -------------------- CREATE COMMUNITY --------------------
 exports.createCommunity = async (req, res) => {
   try {
