@@ -18,27 +18,39 @@ exports.getAmenities = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-
 exports.updateAmenity = async (req, res) => {
   try {
     const communityId = req.user.community;
-    const { id } = req.params;
-    const { name, description, isActive, maintenanceStatus } = req.body;
+    const { maintenanceStatus } = req.body;
+    const { id } = req.params; // amenity id
 
-    if (!communityId) {
-      return res.status(400).json({ message: 'HOA Admin is not assigned to any community.' });
+    // 1️⃣ find community that contains the amenity
+    const community = await Community.findOne({
+      _id: communityId,
+      amenities: id
+    });
+
+    if (!community) {
+      return res.status(404).json({
+        message: "Amenity not found for this community (ID mismatch)"
+      });
     }
 
-    const amenity = await Amenity.findOneAndUpdate(
-      { _id: req.params.id, community: communityId },
-      { name, description, isActive, maintenanceStatus },      
-      { new: true, runValidators: true }
+    // 2️⃣ update amenity safely
+    const amenity = await Amenity.findByIdAndUpdate(
+      id,
+      { maintenanceStatus },
+      { new: true }
     );
 
-    if (!amenity) return res.status(404).json({ message: 'Amenity not found' });
-    res.status(200).json({ message: 'Amenity updated successfully', amenity });
-  } catch (err) {
+    res.status(200).json({
+      message: "Maintenance status updated successfully",
+      amenity
+    });
 
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while updating amenity" });
   }
 };
 

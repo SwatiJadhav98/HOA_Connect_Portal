@@ -70,3 +70,36 @@ exports.getNotification = async (req, res) => {
     });
   }
 };
+
+exports.createNotification = async (req, res) => {
+  try {
+    const adminId = req.user._id;
+    const communityId = req.user.community;
+    const { title, message, recipients } = req.body;
+
+    if (!title || !message) {
+      return res.status(400).json({ message: "Title and message are required" });
+    }
+
+    if (!Array.isArray(recipients) || recipients.length === 0) {
+      return res.status(400).json({ message: "Please select at least one resident" });
+    }
+
+    const notification = await Notification.create({
+      title,
+      message,
+      recipients,     // <-- list of selected resident IDs
+      community: communityId,
+      createdBy: adminId
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Notification sent successfully",
+      notification
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while creating notification" });
+  }
+};

@@ -6,10 +6,20 @@ const Complaint = require("../../models/Complaint");
 const Announcement = require("../../models/Announcement");
 const Amenity = require("../../models/Amenity");
 const Payment = require("../../models/Payment");
+const Notification = require("../../models/Notification");
 
 exports.getHoaAdminDashboard = async (req, res) => {
   try {
     const communityId = req.user.community; // Admin's community
+
+    // Get superadmins
+    const superAdmins = await User.find({ role: "superadmin" }).select("_id");
+
+    // Count notifications created by superadmin
+    const notifications = await Notification.countDocuments({
+      community: communityId,
+      createdBy: { $in: superAdmins.map((u) => u._id) },
+    });
 
     // Count residents in this community
     const residents = await User.countDocuments({ role: "resident", community: communityId });
@@ -37,6 +47,7 @@ exports.getHoaAdminDashboard = async (req, res) => {
     res.json({
       success: true,
       data: {
+        notifications,
         residents,
         hoaAdmins,
         complaints,

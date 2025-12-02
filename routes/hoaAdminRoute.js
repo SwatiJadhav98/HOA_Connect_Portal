@@ -12,7 +12,7 @@ const { getComplaints, updateComplaintStatus} = require('../controllers/hoaAdmin
 const { getPayments, updatePaymentStatus, getPaymentsByDate} = require('../controllers/hoaAdmin/paymentController');
 const { createPoll, getPolls} = require('../controllers/hoaAdmin/pollController');
 const { uploadDocument, deleteDocument, getDocuments } = require('../controllers/hoaAdmin/documentController');
-const {getNotification, sendNotification} = require('../controllers/hoaAdmin/notificationController');
+const {getNotification, sendNotification, createNotification} = require('../controllers/hoaAdmin/notificationController');
 const { createMeeting, getMeetings } = require('../controllers/hoaAdmin/meetingController');
 const { getAnalytics} = require('../controllers/hoaAdmin/analyticsController');
 const { replaceAdmin} = require('../controllers/hoaAdmin/replaceAdminController');
@@ -60,6 +60,7 @@ router.get('/getmeetings', protect, authorizeRoles("admin"), getMeetings);
 //Notifications
 router.post("/sendnotification", protect, authorizeRoles("admin"), sendNotification);
 router.get("/getnotification", protect, authorizeRoles("admin"), getNotification)
+router.post("/createnotification",protect, authorizeRoles("admin"), createNotification);
 
 // Analytics
 router.get('/analytics', protect, authorizeRoles("admin"), getAnalytics);
