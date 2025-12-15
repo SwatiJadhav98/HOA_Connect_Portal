@@ -38,8 +38,7 @@ exports.getResidentDashboardCounts = async (req, res) => {
 
     // 5. Active Polls for this community
     const polls = await Poll.countDocuments({
-      community: communityId,
-      endDate: { $gte: new Date() }, // active polls only
+      community: communityId
     });
 
     return res.json({

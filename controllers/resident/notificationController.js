@@ -3,11 +3,19 @@ const Notification = require("../../models/Notification");
 
 exports.getNotification = async (req, res) => {
   try {
-    const userId = req.user._id;
+    
     const communityId = req.user.community;
 
+    const hoaAdmins = await User.find({
+      community: communityId,
+      role: "admin",
+    }).select("_id");
+
+    const adminIds = hoaAdmins.map(admin => admin._id);
+
     const notifications = await Notification.find({
-      community: communityId
+      community: communityId,
+      createdBy: { $in: adminIds },
     })
       .populate("createdBy", "name role")
       .sort({ createdAt: -1 });
