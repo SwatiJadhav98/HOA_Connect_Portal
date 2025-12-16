@@ -85,6 +85,24 @@ exports.createNotification = async (req, res) => {
       return res.status(400).json({ message: "Please select at least one resident" });
     }
 
+    if (recipients.length === 1) {
+      const user = await User.findById(recipients[0]).select("name");
+
+      const notification = await Notification.create({
+        title,
+        message,
+        recipients: [recipients[0]],
+        community: communityId,
+        createdBy: adminId,
+      });
+
+      return res.status(201).json({
+        success: true,
+        message: "Notification sent to single user",
+        notification,
+      });
+    }
+
     const notification = await Notification.create({
       title,
       message,

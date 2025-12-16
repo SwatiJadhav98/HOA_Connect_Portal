@@ -65,10 +65,36 @@ exports.updateResident = async (req, res) => {
 exports.deleteResident = async (req, res) => {
   try {
     const { id } = req.params;
-    const resident = await User.findOneAndDelete({ _id: id, community: req.user.community, role: 'resident' });
+    const communityId = req.user.community;
+
+    const resident = await User.findOne({
+      _id: id,
+      community: communityId,
+      role: "resident",
+    });
 
     if (!resident) return res.status(404).json({ message: 'Resident not found' });
-    res.status(200).json({ message: 'Resident deleted successfully' });
+    
+    await Promise.all([
+      // remove resident from notifications
+      Notification.updateMany(
+        { recipients: id },
+        { $pull: { recipients: id } }
+      ),
+
+      // delete complaints created by resident
+      Complaint.deleteMany({ createdBy: id }),
+
+      // delete payments of resident
+      Payment.deleteMany({ user: id }),
+    ]);
+    await User.deleteOne({ _id: id });
+    
+    res.status(200).json({
+      success: true,
+      message: "Resident and all related data deleted successfully",
+    });
+    
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
