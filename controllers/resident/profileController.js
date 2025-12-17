@@ -22,24 +22,28 @@ exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const { name, email, phone, house } = req.body;
+    // ✅ MATCH FRONTEND FIELD NAMES
+    const { name, email, phoneNo, houseNumber } = req.body;
 
-    const updateProfile = await User.findByIdAndUpdate(userId, {
-      name: name,
-      email: email,
-      phoneNumber: phone,
-      houseNumber: house,
-      updatedAt: Date.now(),
-    },
-    { new: true}
+    const updatedProfile = await User.findByIdAndUpdate(
+      userId,
+      {
+        name,
+        email,
+        phoneNo,
+        houseNumber,
+        updatedAt: Date.now(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
     ).select("-password");
-
-    // await User.save();
 
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
-      updateProfile
+      profile: updatedProfile,
     });
 
   } catch (error) {
