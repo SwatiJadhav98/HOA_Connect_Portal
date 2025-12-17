@@ -12,7 +12,7 @@ const { bookAminity, getMyBooking, getAmenitiesByResident } = require('../contro
 const { getProfile, updateProfile} = require('../controllers/resident/profileController');
 const { getDocuments, downloadDocument } = require('../controllers/resident/documentcontoller');
 const { getMeetingsByResident, rsvpMeeting, joinMeeting } = require('../controllers/resident/meetingController');
-const { initiatePayment , paymentSuccess, downloadReceipt, getPaymentHistory } = require("../controllers/resident/paymentController");
+const { initiatePayment , paymentSuccess, downloadReceipt, getPaymentHistory, cancelPayment } = require("../controllers/resident/paymentController");
 const { getNotification } = require('../controllers/resident/notificationController');
 const {votePoll, getPolls } = require('../controllers/resident/pollController');
 
@@ -56,6 +56,7 @@ router.post("/payment/initiate",protect, authorizeRoles("resident"), initiatePay
 router.put("/payment/:id/success",protect, authorizeRoles("resident"), paymentSuccess);
 router.get("/payment/receipt/:transactionId",protect, authorizeRoles("resident"), downloadReceipt);   
 router.get("/getpaymenthistory",protect, authorizeRoles("resident"), getPaymentHistory);
+router.put("/payment/:id/cancel", protect, authorizeRoles("resident"), cancelPayment);
 
 //--------------------Notification----------------------
 router.get("/getnotification", protect, authorizeRoles("resident"), getNotification);

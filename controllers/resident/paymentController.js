@@ -111,7 +111,7 @@ exports.getPaymentHistory = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const payments = await Payment.find({ user: userId })
+    const payments = await Payment.find({ user: userId,status: { $in: ["completed", "failed"] } })
       .populate("community", "name")
       .sort({ transactionDate: -1 });
 
@@ -120,5 +120,29 @@ exports.getPaymentHistory = async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Error fetching payment history" });
+  }
+};
+
+// PUT /resident/payment/:id/cancel
+exports.cancelPayment = async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.id);
+
+    if (!payment) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+
+    if (payment.status !== "pending") {
+      return res
+        .status(400)
+        .json({ message: "Payment already processed" });
+    }
+
+    payment.status = "failed";
+    await payment.save();
+
+    res.json({ success: true, message: "Payment cancelled" });
+  } catch (error) {
+    res.status(500).json({ message: "Cancel failed" });
   }
 };
