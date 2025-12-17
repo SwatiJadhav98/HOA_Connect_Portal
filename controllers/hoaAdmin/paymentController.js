@@ -11,7 +11,7 @@ exports.getPayments = async (req, res) => {
     if (!req.user.community) {
       return res.status(400).json({ message: "HOA Admin is not assigned to any community" });
     }
-    const payments = await Payment.find({ community: req.user.community }).populate('user', 'name email');
+    const payments = await Payment.find({ community: req.user.community, status:"completed" }).populate('user', 'name email');
     res.json(payments);
   } catch (err) {
     res.status(500).json({ message: 'Error fetching payments', error: err.message });
