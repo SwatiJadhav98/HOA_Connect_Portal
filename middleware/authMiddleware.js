@@ -54,44 +54,35 @@ const authorizeRoles = (...roles) => {
 
 const forgotPassword = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, phoneNo, newPassword } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!email || !phoneNo || !newPassword) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
+    }
 
-    // generate temporary password
-    const tempPassword = crypto.randomBytes(4).toString("hex");
+    // Match email + house number
+    const user = await User.findOne({ email, phoneNo });
 
-    // hash it
-    user.password = await bcrypt.hash(tempPassword, 10);
+    if (!user) {
+      return res.status(404).json({
+        message: "Invalid email or house number",
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
     await user.save();
 
-    // transporter (GMAIL APP PASSWORD)
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER, // sender email
-        pass: process.env.EMAIL_PASS, // app password
-      },
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully. Please login with new password.",
     });
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: user.email,
-      subject: "HOA Connect - Password Reset",
-      html: `
-            <div style="font-family: Arial; padding: 20px">
-            <h2>Password Reset</h2>
-            <p>Your temporary password is:</p>
-            <h3 style="color: #0f766e">${tempPassword}</h3>
-            <p>Please login and change your password immediately.</p>
-            </div>
-          `,
-    });
-
-    res.status(200).json({ message: "Password sent to email" });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 };

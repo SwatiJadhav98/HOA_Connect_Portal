@@ -238,14 +238,37 @@ exports.sendNotification = async (req, res) => {
   }
 };
 
-exports.getNotification = async (req, res) => {
-  try {
-    const userId = req.user._id; // user from protect middleware
+// exports.getNotification = async (req, res) => {
+//   try {
+//     const userId = req.user._id; // user from protect middleware
 
     
-    const notifications = await Notification.find({ recipients: userId })
-      .populate("createdBy", "name")     // show who created notification
-      .sort({ createdAt: -1 });          // latest first
+//     const notifications = await Notification.find({ recipients: userId })
+//       .populate("createdBy", "name")     // show who created notification
+//       .sort({ createdAt: -1 });          // latest first
+
+//     res.status(200).json({
+//       success: true,
+//       count: notifications.length,
+//       notifications,
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to fetch notifications",
+//       error: error.message,
+//     });
+//   }
+// };
+
+exports.getNotification = async (req, res) => {
+  try {
+    const notifications = await Notification.find()
+      .populate("createdBy", "name")
+      .populate("community", "name")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -262,3 +285,4 @@ exports.getNotification = async (req, res) => {
     });
   }
 };
+

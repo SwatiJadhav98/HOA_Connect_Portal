@@ -10,19 +10,6 @@ exports.getComplaints = async (req, res) => {
 };
 
 exports.updateComplaintStatus = async (req, res) => {
-  // try {
-  //   const { id } = req.params;
-  //   const complaint = await Complaint.findOneAndUpdate(
-  //     { _id: id, community: req.user.community },
-  //     req.body,
-  //     { new: true }
-  //   );
-  //   if (!complaint) return res.status(404).json({ message: 'Complaint not found' });
-  //   res.json({ message: 'Complaint updated', complaint });
-  // } catch (err) {
-  //   res.status(500).json({ message: 'Error updating complaint', error: err.message });
-  // }
-
   try {
     const complaintId = req.params.id;
     const { status } = req.body; // "In Progress" | "Resolved"
